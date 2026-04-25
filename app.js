@@ -287,7 +287,6 @@ function renderDebates(withMetrics) {
         <small></small>
         <div class="chip-tags">
           ${participant.joined ? '<span class="chip-tag chip-tag-joined">토론 참여</span>' : ""}
-          ${participant.side ? `<span class="chip-tag ${sideClass}">${participant.side}</span>` : ""}
           ${participant.insight ? '<span class="chip-tag chip-tag-insight">인사이트 작성</span>' : ""}
           ${participant.persuaded ? '<span class="chip-tag chip-tag-persuaded">설득됨</span>' : ""}
           ${participant.bestInsight ? '<span class="chip-tag chip-tag-best">베스트 인사이트</span>' : ""}
@@ -2210,12 +2209,6 @@ function openParticipantModal(nickname) {
   const list = document.getElementById("modal-history-list");
   list.innerHTML = "";
   history.forEach((item) => {
-    const sideClass =
-      item.side === "찬성"
-        ? "chip-tag-pro"
-        : item.side === "반대"
-        ? "chip-tag-con"
-        : "chip-tag-joined";
     const row = document.createElement("article");
     row.className = "history-row";
     row.innerHTML = `
@@ -2232,7 +2225,6 @@ function openParticipantModal(nickname) {
       </div>
       <div class="history-tags">
         <span class="chip-tag chip-tag-duration">체류 ${item.durationMin}분</span>
-        ${item.side ? `<span class="chip-tag ${sideClass}">${item.side}</span>` : ""}
         ${item.insight ? '<span class="chip-tag chip-tag-insight">인사이트 작성</span>' : ""}
         ${item.persuaded ? '<span class="chip-tag chip-tag-persuaded">설득됨</span>' : ""}
         ${item.bestInsight ? '<span class="chip-tag chip-tag-best">베스트 인사이트</span>' : ""}
