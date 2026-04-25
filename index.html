@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debate Atlas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css?v=20260419b" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Debate Lab Infographic Prototype</p>
+          <h1>토론 데이터를 한눈에 읽히는 시각 구조로 재해석</h1>
+          <p class="hero-text">
+            참여율, 찬반 균형, 설득률, 인사이트 작성률을 중심으로 토론 흐름을
+            요약하고, 필요할 때만 참여자 닉네임을 확인할 수 있는 대시보드입니다.
+          </p>
+        </div>
+        <div class="hero-panel">
+          <div class="hero-stat">
+            <span>전체 토론</span>
+            <strong id="total-debates">0</strong>
+          </div>
+          <div class="hero-stat">
+            <span>평균 참여율</span>
+            <strong id="avg-participation-rate">0%</strong>
+          </div>
+          <div class="hero-stat">
+            <span>평균 설득률</span>
+            <strong id="avg-persuasion-rate">0%</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <nav class="tabs-nav" aria-label="대시보드 탭">
+          <button class="tab-button is-active" data-tab-target="overview-tab" type="button">개요</button>
+          <button class="tab-button" data-tab-target="trend-tab" type="button">선형 그래프</button>
+          <button class="tab-button" data-tab-target="analysis-tab" type="button">토론별 분석</button>
+          <button class="tab-button" data-tab-target="advanced-tab" type="button">고급 분석</button>
+          <button class="tab-button" data-tab-target="profiles-tab" type="button">참여자 프로필</button>
+          <button class="tab-button" data-tab-target="links-tab" type="button">제출 URL</button>
+          <button class="tab-button" data-tab-target="ranking-tab" type="button">랭킹</button>
+        </nav>
+        <div class="duration-filter-bar">
+          <span id="duration-filter-status" class="duration-filter-status">시간 데이터: 전체 참여자 기준</span>
+          <button id="duration-filter-toggle" class="duration-filter-toggle" type="button" aria-pressed="false">
+            <span class="duration-filter-toggle-track">
+              <span class="duration-filter-toggle-thumb"></span>
+            </span>
+            <span id="duration-filter-toggle-label">1004 제외 OFF</span>
+          </button>
+        </div>
+
+        <section id="overview-tab" class="tab-panel is-active">
+          <section class="overview-grid">
+            <article class="kpi-card accent-blue">
+              <p>진행중</p>
+              <strong id="active-count">0</strong>
+              <span>현재 열려 있는 토론</span>
+            </article>
+            <article class="kpi-card accent-amber">
+              <p>집계중</p>
+              <strong id="reviewing-count">0</strong>
+              <span>인사이트를 수집하는 토론</span>
+            </article>
+            <article class="kpi-card accent-slate">
+              <p>종료</p>
+              <strong id="closed-count">0</strong>
+              <span>결과를 비교할 수 있는 토론</span>
+            </article>
+            <article class="kpi-card accent-coral">
+              <p>평균 체류 시간</p>
+              <strong id="avg-duration">0분</strong>
+              <span>토론당 평균 몰입 시간</span>
+            </article>
+          </section>
+
+          <section class="panel two-column">
+            <div>
+              <div class="section-heading">
+                <p class="eyebrow">Status Breakdown</p>
+                <h2>토론 상태 분포</h2>
+              </div>
+              <div id="status-bars" class="stack-bars"></div>
+            </div>
+            <div>
+              <div class="section-heading">
+                <p class="eyebrow">Key Signals</p>
+                <h2>전체 평균 지표</h2>
+              </div>
+              <div class="signal-list">
+                <div class="signal-item">
+                  <span>인사이트 작성률</span>
+                  <strong id="avg-insight-rate">0%</strong>
+                </div>
+                <div class="signal-item">
+                  <span>찬반 균형도</span>
+                  <strong id="avg-balance-score">0점</strong>
+                </div>
+                <div class="signal-item">
+                  <span>몰입도 점수</span>
+                  <strong id="avg-engagement-score">0점</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading">
+              <p class="eyebrow">Insight Keywords</p>
+              <h2>인사이트 워드클라우드</h2>
+            </div>
+            <div id="keyword-cloud" class="keyword-cloud"></div>
+          </section>
+        </section>
+
+        <section id="trend-tab" class="tab-panel">
+          <section class="panel">
+            <div class="section-heading">
+              <p class="eyebrow">Trend View</p>
+              <h2>토론 흐름 추세 그래프</h2>
+            </div>
+            <div class="trend-layout">
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>참여율 추이</span>
+                  <strong id="trend-participation-summary"></strong>
+                </div>
+                <svg id="participation-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="참여율 추이 차트"></svg>
+              </div>
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>평균 체류시간 추이</span>
+                  <strong id="trend-duration-summary"></strong>
+                </div>
+                <svg id="duration-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="평균 체류시간 추이 차트"></svg>
+              </div>
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>인사이트 작성률 추이</span>
+                  <strong id="trend-insight-summary"></strong>
+                </div>
+                <svg id="insight-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="인사이트 작성률 추이 차트"></svg>
+              </div>
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>설득률 추이</span>
+                  <strong id="trend-persuasion-summary"></strong>
+                </div>
+                <svg id="persuasion-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="설득률 추이 차트"></svg>
+              </div>
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>평균 인사이트 글자수 변동 추이</span>
+                  <strong id="trend-insight-length-summary"></strong>
+                </div>
+                <svg id="insight-length-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="평균 인사이트 글자수 추이 차트"></svg>
+              </div>
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>몰입도지수 추이</span>
+                  <strong id="trend-engagement-summary"></strong>
+                </div>
+                <svg id="engagement-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="몰입도지수 추이 차트"></svg>
+              </div>
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>참여 규모 비교</span>
+                  <strong id="trend-volume-summary"></strong>
+                </div>
+                <div class="chart-legend">
+                  <span><i class="legend-dot legend-blue"></i>집계된 참여자 수</span>
+                  <span><i class="legend-dot legend-coral"></i>실제 참여자 수</span>
+                  <span><i class="legend-dot legend-mint"></i>인사이트 작성자 수</span>
+                </div>
+                <svg id="volume-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="참여 규모 비교 차트"></svg>
+              </div>
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>토론 강도 비교</span>
+                  <strong id="trend-intensity-summary"></strong>
+                </div>
+                <div class="chart-legend">
+                  <span><i class="legend-dot legend-slate"></i>평균 참여 시간</span>
+                  <span><i class="legend-dot legend-amber"></i>찬반 팽팽함</span>
+                  <span><i class="legend-dot legend-coral"></i>설득된 사람 수</span>
+                </div>
+                <svg id="intensity-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="토론 강도 비교 차트"></svg>
+              </div>
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>요일별 활동량 비교</span>
+                  <strong id="trend-weekday-summary"></strong>
+                </div>
+                <div class="chart-legend">
+                  <span><i class="legend-dot legend-coral"></i>참여율</span>
+                  <span><i class="legend-dot legend-slate"></i>평균 체류시간</span>
+                  <span><i class="legend-dot legend-mint"></i>인사이트 작성률</span>
+                </div>
+                <svg id="weekday-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="요일별 활동량 비교 차트"></svg>
+                <div id="weekday-stat-list" class="weekday-stat-list"></div>
+              </div>
+              <div class="chart-card">
+                <div class="viz-header">
+                  <span>주차별 활동량 비교</span>
+                  <strong id="trend-weekly-summary"></strong>
+                </div>
+                <div class="chart-legend">
+                  <span><i class="legend-dot legend-coral"></i>참여율</span>
+                  <span><i class="legend-dot legend-slate"></i>평균 체류시간</span>
+                  <span><i class="legend-dot legend-mint"></i>인사이트 작성률</span>
+                </div>
+                <svg id="weekly-trend-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="주차별 활동량 비교 차트"></svg>
+                <div id="weekly-stat-list" class="weekday-stat-list"></div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section id="analysis-tab" class="tab-panel">
+          <section class="panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Debate Comparison</p>
+                <h2>토론별 인포그래픽 카드</h2>
+              </div>
+            </div>
+            <div id="data-status" class="data-status">집계 데이터를 불러오는 중입니다.</div>
+            <div id="debate-list" class="debate-list"></div>
+          </section>
+        </section>
+
+        <section id="advanced-tab" class="tab-panel">
+          <section class="panel">
+            <div class="section-heading split">
+              <div>
+                <p class="eyebrow">Advanced Analysis</p>
+                <h2>사람과 날짜를 조합해 참여 패턴 비교</h2>
+              </div>
+              <div id="advanced-summary-pill" class="secret-status">0명 · 0일 선택</div>
+            </div>
+
+            <div class="advanced-layout">
+              <aside class="advanced-filters">
+                <details class="advanced-disclosure" open>
+                  <summary class="advanced-disclosure-summary">필터 설정</summary>
+                  <div class="advanced-filter-row">
+                    <section class="advanced-filter-card">
+                      <div class="advanced-filter-head">
+                        <h3>참여자 선택</h3>
+                        <div class="advanced-filter-actions">
+                          <button id="advanced-participants-all" class="mini-action-button" type="button">전체 선택</button>
+                          <button id="advanced-participants-none" class="mini-action-button" type="button">전체 해제</button>
+                        </div>
+                      </div>
+                      <div id="advanced-participant-chips" class="toggle-chip-grid"></div>
+                    </section>
+
+                    <section class="advanced-filter-card">
+                      <div class="advanced-filter-head">
+                        <h3>날짜 선택</h3>
+                        <div class="advanced-filter-actions">
+                          <button id="advanced-dates-all" class="mini-action-button" type="button">전체 선택</button>
+                          <button id="advanced-dates-none" class="mini-action-button" type="button">전체 해제</button>
+                        </div>
+                      </div>
+                      <div id="advanced-date-chips" class="toggle-chip-grid"></div>
+                    </section>
+                  </div>
+                </details>
+              </aside>
+
+              <div class="advanced-results">
+                <div class="advanced-kpi-grid">
+                  <article class="metric-tile">
+                    <span>선택된 기록 수</span>
+                    <strong id="advanced-record-count">0건</strong>
+                  </article>
+                  <article class="metric-tile">
+                    <span>평균 체류시간</span>
+                    <strong id="advanced-avg-duration">0분</strong>
+                  </article>
+                  <article class="metric-tile">
+                    <span>평균보다 오래 참여</span>
+                    <strong id="advanced-above-average">0건</strong>
+                  </article>
+                  <article class="metric-tile">
+                    <span>인사이트 작성</span>
+                    <strong id="advanced-insight-count">0건</strong>
+                  </article>
+                </div>
+
+                <details class="advanced-disclosure" open>
+                  <summary class="advanced-disclosure-summary">비교 그래프</summary>
+                  <div class="advanced-chart-grid">
+                    <div class="chart-card">
+                      <div class="viz-header">
+                        <span>선택 참여자 일자별 체류시간</span>
+                        <strong id="advanced-duration-summary"></strong>
+                      </div>
+                      <div id="advanced-duration-legend" class="chart-legend"></div>
+                      <svg id="advanced-duration-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="선택 참여자 일자별 체류시간 차트"></svg>
+                    </div>
+                    <div class="chart-card">
+                      <div class="viz-header">
+                        <span>선택 참여자 비교</span>
+                        <strong id="advanced-participant-compare-summary"></strong>
+                      </div>
+                      <div id="advanced-participant-compare" class="advanced-compare-list"></div>
+                    </div>
+                    <div class="chart-card">
+                      <div class="viz-header">
+                        <span>요일별 평균 체류시간</span>
+                        <strong id="advanced-weekday-summary"></strong>
+                      </div>
+                      <div id="advanced-weekday-list" class="weekday-stat-list"></div>
+                    </div>
+                  </div>
+                </details>
+
+                <details class="advanced-disclosure">
+                  <summary class="advanced-disclosure-summary">주제별 비교</summary>
+                  <div class="advanced-table-grid">
+                    <div class="chart-card">
+                      <div class="viz-header">
+                        <span>주제별 참여시간 비교</span>
+                        <strong id="advanced-topic-summary"></strong>
+                      </div>
+                      <div id="advanced-topic-table" class="advanced-table"></div>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section id="profiles-tab" class="tab-panel">
+          <section class="panel">
+            <div class="section-heading split">
+              <div>
+                <p class="eyebrow">Participant Profiles</p>
+                <h2>참여자 기준 누적 데이터 한눈에 보기</h2>
+              </div>
+              <div id="profiles-summary-pill" class="secret-status">0명</div>
+            </div>
+            <div class="data-status">이름, 칭호, 찬반 선택, 설득, 베스트 인사이트, 진심지수를 한 화면에서 비교합니다.</div>
+            <div class="profiles-table-wrap">
+              <div id="profiles-table" class="profiles-table"></div>
+            </div>
+            <div id="profiles-pagination" class="profiles-pagination"></div>
+          </section>
+        </section>
+
+        <section id="links-tab" class="tab-panel">
+          <section class="panel">
+            <div class="section-heading split">
+              <div>
+                <p class="eyebrow">Submitted Links</p>
+                <h2>토론 제출 URL 모음</h2>
+              </div>
+              <div id="links-summary" class="secret-status">0개 URL</div>
+            </div>
+            <div id="links-status" class="data-status">URL 데이터를 불러오는 중입니다.</div>
+            <div id="links-list" class="links-list"></div>
+          </section>
+        </section>
+
+        <section id="ranking-tab" class="tab-panel">
+          <section class="panel">
+            <div class="section-heading">
+              <p class="eyebrow">Rankings</p>
+              <h2>기록으로 보는 토론 랭킹</h2>
+            </div>
+            <div id="ranking-grid" class="ranking-grid"></div>
+            <div class="ranking-divider"></div>
+            <div class="section-heading">
+              <p class="eyebrow">Participant Rankings</p>
+              <h2>개인 데이터 랭킹</h2>
+            </div>
+            <div id="participant-ranking-grid" class="ranking-grid participant-ranking-grid"></div>
+            <div class="ranking-divider"></div>
+            <div class="section-heading">
+              <p class="eyebrow">Role Rankings</p>
+              <h2>아젠다 세터 / 아키텍트 랭킹</h2>
+            </div>
+            <div id="role-ranking-grid" class="ranking-grid role-ranking-grid"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <template id="debate-card-template">
+      <article class="debate-card">
+        <div class="debate-card-top">
+          <div>
+            <span class="status-badge"></span>
+            <h3 class="debate-title"></h3>
+            <p class="debate-meta"></p>
+          </div>
+          <div class="mini-score">
+            <span>몰입도</span>
+            <strong class="engagement-score"></strong>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-tile">
+            <span>참여율</span>
+            <strong class="participation-rate"></strong>
+          </div>
+          <div class="metric-tile">
+            <span>인사이트 작성률</span>
+            <strong class="insight-rate"></strong>
+          </div>
+          <div class="metric-tile">
+            <span>설득률</span>
+            <strong class="persuasion-rate"></strong>
+          </div>
+          <div class="metric-tile">
+            <span>평균 체류</span>
+            <strong class="duration-value"></strong>
+          </div>
+        </div>
+
+        <div class="viz-grid">
+          <div class="viz-block">
+            <div class="viz-header">
+              <span>찬반 비율</span>
+              <strong class="vote-summary"></strong>
+            </div>
+            <div class="vote-bar">
+              <div class="vote-bar-pro"></div>
+              <div class="vote-bar-con"></div>
+            </div>
+          </div>
+          <div class="viz-block">
+            <div class="viz-header">
+              <span>주요 흐름</span>
+            </div>
+            <ul class="bullet-metrics"></ul>
+          </div>
+        </div>
+
+        <div class="participant-panel">
+          <div class="participant-header">
+            <h4>참여자 체크</h4>
+            <p>참여자별 상태를 바로 확인할 수 있습니다.</p>
+          </div>
+          <div class="participant-chips"></div>
+        </div>
+      </article>
+    </template>
+
+    <div id="participant-modal" class="modal-shell" hidden>
+      <div class="modal-backdrop" data-close-modal="true"></div>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="participant-modal-title">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow">Participant History</p>
+            <h3 id="participant-modal-title">참여자 히스토리</h3>
+            <div id="modal-title-badges" class="modal-title-badges"></div>
+          </div>
+          <button id="participant-modal-close" class="modal-close" type="button">닫기</button>
+        </div>
+        <div class="modal-summary">
+          <div class="metric-tile">
+            <span>참여 토론 수</span>
+            <strong id="modal-joined-count">0회</strong>
+          </div>
+          <div class="metric-tile">
+            <span>인사이트 작성</span>
+            <strong id="modal-insight-count">0회</strong>
+          </div>
+          <div class="metric-tile">
+            <span>총 체류 시간</span>
+            <strong id="modal-total-duration">0분</strong>
+          </div>
+          <div class="metric-tile">
+            <span>평균보다 오래 참여</span>
+            <strong id="modal-above-average-count">0회</strong>
+          </div>
+          <div class="metric-tile">
+            <span>진심지수</span>
+            <strong id="modal-sincerity-score">0점</strong>
+          </div>
+          <div class="metric-tile">
+            <span>평균 인사이트 글자수</span>
+            <strong id="modal-average-insight-length">0자</strong>
+          </div>
+          <div class="metric-tile">
+            <span>마지막 활동 시각</span>
+            <strong id="modal-last-heartbeat">기록 없음</strong>
+          </div>
+        </div>
+        <div class="modal-chart-wrap">
+          <div class="chart-card">
+            <div class="viz-header">
+              <span>체류 시간 변화</span>
+              <strong id="modal-duration-summary"></strong>
+            </div>
+            <svg id="modal-duration-chart" class="trend-chart" viewBox="0 0 640 240" aria-label="참여자 체류 시간 변화"></svg>
+          </div>
+        </div>
+        <div class="modal-history">
+          <div class="section-heading">
+            <h2>토론별 흐름</h2>
+          </div>
+          <div id="modal-history-list" class="modal-history-list"></div>
+        </div>
+      </section>
+    </div>
+
+    <script src="./app.js?v=20260419b"></script>
+  </body>
+</html>

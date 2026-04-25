@@ -1,0 +1,11 @@
+{
+  "firebase": {
+    "projectId": "your-project-id",
+    "apiKey": "your-web-api-key"
+  },
+  "outputPath": "./data/debates.json",
+  "timezone": "Asia/Seoul",
+  "requestDelayMs": 250,
+  "participantTargetStrategy": "student-users",
+  "includeParticipantNicknames": true
+}
